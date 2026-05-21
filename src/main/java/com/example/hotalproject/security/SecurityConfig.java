@@ -46,17 +46,42 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/api-docs/**"
+                                "/api-docs/**",
+                                "/api/health",
+                                "/actuator/health",
+                                "/error"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/hotels/**", "/api/room-types/**", "/uploads/**").permitAll()
+
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/hotels/**",
+                                "/api/room-types/**",
+                                "/uploads/**"
+                        ).permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/api/availability/check").permitAll()
-                        .requestMatchers("/api/bookings/manager-upcoming").hasAnyRole("MANAGER", "ADMIN")
+
+                        .requestMatchers("/api/bookings/manager-upcoming")
+                        .hasAnyRole("MANAGER", "ADMIN")
+
                         .requestMatchers("/api/bookings/**").authenticated()
                         .requestMatchers("/api/payments/**").authenticated()
                         .requestMatchers("/api/notifications/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/hotels/**", "/api/room-types/**").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.PUT, "/api/hotels/**", "/api/room-types/**").hasAnyRole("ADMIN", "MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/hotels/**", "/api/room-types/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/hotels/**",
+                                "/api/room-types/**"
+                        ).hasAnyRole("ADMIN", "MANAGER")
+
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/hotels/**",
+                                "/api/room-types/**"
+                        ).hasAnyRole("ADMIN", "MANAGER")
+
+                        .requestMatchers(HttpMethod.DELETE,
+                                "/api/hotels/**",
+                                "/api/room-types/**"
+                        ).hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
@@ -68,7 +93,6 @@ public class SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
-
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -86,13 +110,27 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://localhost:5173"
+        ));
+
+        configuration.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "OPTIONS"
+        ));
+
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
     }
 }
