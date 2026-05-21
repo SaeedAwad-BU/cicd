@@ -20,4 +20,5 @@ public class ApiError {
     public String getError() { return error; }
     public String getMessage() { return message; }
     public String getPath() { return path; }
+
 }
